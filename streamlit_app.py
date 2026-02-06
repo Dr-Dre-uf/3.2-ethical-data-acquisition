@@ -2,332 +2,252 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# --- 1. CONFIGURATION & STYLE ---
-st.set_page_config(page_title="Ethical Data Acquisition Demo", layout="wide", page_icon="⚖️")
+# --- 1. CONFIGURATION ---
+st.set_page_config(page_title="Ethical Data Acquisition", layout="wide")
 
 st.markdown("""
 <style>
     .narrator-box {
-        background-color: #f0f4f8; 
+        background-color: #f4f6f7; 
         border-left: 5px solid #2c3e50; 
         padding: 20px; 
-        border-radius: 5px; 
+        border-radius: 4px; 
         font-style: italic; 
         font-family: 'Georgia', serif;
         margin-bottom: 25px;
         color: #333;
     }
-    .instruction-box {
-        background-color: #e8f8f5;
-        border: 1px solid #2ecc71;
-        padding: 15px;
-        border-radius: 8px;
+    .header-box {
+        background-color: #eaf2f8; 
+        border: 1px solid #d5d8dc; 
+        padding: 15px; 
+        border-radius: 5px; 
         margin-bottom: 20px;
-        font-weight: 500;
-        color: #145a32;
     }
-    .universal-header { 
-        color: #2c3e50; 
-        border-bottom: 2px solid #eee; 
-        padding-bottom: 10px; 
-        margin-top: 20px;
-    }
-    .concept-card {
-        background-color: white;
+    .toolkit-step {
+        background-color: #fdfefe;
+        border: 1px solid #eaecee;
         padding: 15px;
-        border-radius: 8px;
-        border: 1px solid #ddd;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        height: 100%;
+        border-radius: 5px;
+        margin-bottom: 10px;
     }
+    h2 { color: #1a5276; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+    h4 { color: #2c3e50; margin-top: 10px; }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 2. SIDEBAR NAVIGATION ---
-st.sidebar.title("🧭 Demo Navigation")
+# --- 2. SIDEBAR: TRACK & CONFIGURATION ---
+st.sidebar.title("Course Configuration")
+
+track = st.sidebar.radio(
+    "Select Research Track:",
+    ["Clinical Track (IC3 COVID-19)", "Basic Science Track (ImmPort)"]
+)
+
+# Set Variables based on Track
+if "Clinical" in track:
+    dataset_name = "IC3 UF Public COVID-19 Dataset"
+    dataset_link = "https://ic3.center.ufl.edu/research/resources/datasets/"
+    subject_term = "Patient"
+    sample_term = "Electronic Health Record (EHR)"
+    underserved_example = "Rural populations with limited hospital access"
+else:
+    dataset_name = "ImmPort (Immunology Database)"
+    dataset_link = "https://www.immport.org/shared/home"
+    subject_term = "Donor"
+    sample_term = "Biological Specimen"
+    underserved_example = "Donors of non-European ancestry"
+
+st.sidebar.markdown("---")
+st.sidebar.info(f"**Current Context:**\nDataset: {dataset_name}\nSubject: {subject_term}")
+
+# Navigation
 section = st.sidebar.radio(
     "Select Module:",
     [
         "1. Intro: The Four Pillars",
-        "2. Autonomy: Consent Demo",
-        "3. Justice: Sampling Demo",
-        "4. Privacy: Security Demo",
-        "5. Beneficence: Impact Demo",
-        "6. Summary"
-    ],
-    help="Navigate through the different sections of the video script."
+        "2. Autonomy: Informed Consent",
+        "3. Justice: REP-EQUITY Toolkit",
+        "4. Privacy: Security Protocols",
+        "5. Beneficence: Closing the Loop"
+    ]
 )
-
-st.sidebar.markdown("---")
-st.sidebar.info("💡 **Tip:** Hover over buttons and sliders to see definitions and extra context.")
 
 # --- 3. HELPER FUNCTIONS ---
 def narrator(text):
-    """Displays the narrator text from the video script."""
     st.markdown(f'<div class="narrator-box">🎙️ <b>Narrator:</b> "{text}"</div>', unsafe_allow_html=True)
 
-def instruction(text):
-    """Displays user instructions for the demo."""
-    st.markdown(f'<div class="instruction-box">👉 <b>Demo Instruction:</b> {text}</div>', unsafe_allow_html=True)
-
-# --- 4. APP MODULES ---
+# --- 4. APP CONTENT ---
 
 # === SECTION 1: INTRO ===
 if section == "1. Intro: The Four Pillars":
-    st.title("Ethically Sourced Biomedical Data")
+    st.title("Module MS2: Acquiring Ethically Sourced Biomedical Data")
     
     narrator(
-        "Welcome to this educational journey... Today, we embark on an exploration of practices that honor patient "
-        "and donor autonomy, ensure societal justice, and promote the beneficence of improving human health."
+        "Welcome to this educational journey... Today, we embark on an exploration of practices that honor patient autonomy, "
+        "ensure societal justice, and promote the beneficence of improving human health. Our journey will focus on four key pillars."
     )
     
-    st.markdown("### The Foundation of Ethical Science")
-    st.write("These four pillars apply equally to **Clinical Science** (Patients) and **Foundational Science** (Donors/Samples).")
+    st.markdown(f"""
+    <div class="header-box">
+        <h4>Selected Dataset for this Session:</h4>
+        <p><b>{dataset_name}</b> (<a href="{dataset_link}" target="_blank">Link</a>)</p>
+        <p>As we move through the four pillars, apply the concepts to this specific data source.</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.markdown("""
-        <div class="concept-card">
-        <h4>1. Autonomy</h4>
-        <p><b>Respecting the Source.</b><br>
-        Ensuring individuals maintain control over their personal health information and biological samples.</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-    with col2:
-        st.markdown("""
-        <div class="concept-card">
-        <h4>2. Justice</h4>
-        <p><b>Equitable Representation.</b><br>
-        Actively addressing health disparities by including historically underrepresented populations.</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-    with col3:
-        st.markdown("""
-        <div class="concept-card">
-        <h4>3. Privacy</h4>
-        <p><b>Data Security.</b><br>
-        Employing multi-layered security protocols to protect sensitive genetic and medical data.</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-    with col4:
-        st.markdown("""
-        <div class="concept-card">
-        <h4>4. Beneficence</h4>
-        <p><b>Positive Impact.</b><br>
-        Ensuring research outcomes align with community needs and provide actionable health insights.</p>
-        </div>
-        """, unsafe_allow_html=True)
+    with col1: st.info("**1. Autonomy**\n\nInformed Consent & Control")
+    with col2: st.info("**2. Justice**\n\nEquitable Representation")
+    with col3: st.info("**3. Privacy**\n\nData Security & Encryption")
+    with col4: st.info("**4. Beneficence**\n\nReturning Value to Society")
 
 # === SECTION 2: AUTONOMY ===
-elif section == "2. Autonomy: Consent Demo":
-    st.markdown('<h2 class="universal-header">Pillar 1: Autonomy & Informed Consent</h2>', unsafe_allow_html=True)
+elif section == "2. Autonomy: Informed Consent":
+    st.header("Pillar 1: Autonomy & Informed Consent")
     
     narrator(
-        "Informed consent... transcends a simple signature. It is a dynamic, ongoing dialogue... "
-        "Simplifying complex medical jargon into clear, understandable language is crucial."
+        "Informed consent is a critical component of respecting patient autonomy. It transcends a simple signature on a document; "
+        "it is a dynamic, ongoing dialogue... Simplifying complex medical jargon is crucial."
     )
-
-    instruction("Move the slider below to observe how the phrasing of a consent form impacts a participant's understanding and autonomy.")
+    
+    st.subheader(f"Exercise: Tailoring Consent for {dataset_name}")
+    st.write(f"Refine the consent language for a {subject_term} contributing to this dataset.")
 
     col1, col2 = st.columns([1, 1])
     
     with col1:
-        st.markdown("### 🔴 Low Autonomy (Legal Jargon)")
-        st.info(
-            "The undersigned grantor hereby authorizes the utilization of biological materials and associated phenotypic metadata "
-            "for indefinite longitudinal analysis, waiving rights to pecuniary gain..."
+        st.markdown("#### Option A: Legal Standard")
+        st.warning(
+            f"The undersigned {subject_term} hereby grants permissions for the indefinite utilization of "
+            f"{sample_term}s and associated metadata, waiving all rights to future claims..."
         )
-        st.error("Result: Participant is confused. They sign out of fear or pressure, not understanding their rights.")
+        st.write("**Outcome:** Low comprehension. Participants may feel alienated.")
 
     with col2:
-        st.markdown("### 🟢 High Autonomy (Empowered)")
+        st.markdown("#### Option B: Tailored Communication")
+        literacy = st.select_slider("Target Health Literacy Level:", ["Medical Jargon", "Standard", "Simplified & Empowering"], value="Medical Jargon")
         
-        # Interactive Slider
-        clarity = st.select_slider(
-            "Select Communication Style:", 
-            options=["Standard Legalese", "Simplified Language", "Empowered Dialogue"], 
-            value="Standard Legalese",
-            help="See how changing the language level affects the 'Translation' below."
-        )
-        
-        st.markdown("**User View (Translation):**")
-        
-        if clarity == "Standard Legalese":
-            st.warning("⚠️ *Select a better level on the slider above to see the translation.*")
-        elif clarity == "Simplified Language":
+        if literacy == "Medical Jargon":
+            st.warning("Please adjust the slider to simplify the language.")
+        elif literacy == "Simplified & Empowering":
             st.success(
-                "**Translation:** 'You are giving us permission to study your samples/data to understand diseases. "
-                "You will not be paid, but your contribution helps science.'"
+                f"**Revised Text:** 'We are asking for your permission to use your {sample_term} to help researchers understand disease. "
+                "You can say no without affecting your care. You can also withdraw later. We want you to be a partner in this science.'"
             )
-        elif clarity == "Empowered Dialogue":
-            st.success(
-                "**Translation:** 'We want to partner with you. We will use your samples to study X. "
-                "Here are the risks and benefits. You can ask questions now, and you can withdraw at any time. What do you think?'"
-            )
-            st.caption("✅ Narrator: 'Patients should feel empowered... understanding they have the right to withdraw.'")
+            st.caption("Matches Script: 'Patients should feel empowered... understanding they have the right to withdraw.'")
 
-# === SECTION 3: JUSTICE ===
-elif section == "3. Justice: Sampling Demo":
-    st.markdown('<h2 class="universal-header">Pillar 2: Justice & Health Equity</h2>', unsafe_allow_html=True)
+# === SECTION 3: JUSTICE (REP-EQUITY TOOLKIT) ===
+elif section == "3. Justice: REP-EQUITY Toolkit":
+    st.header("Pillar 2: Justice & Health Equity")
     
     narrator(
-        "Health equity involves actively addressing and reducing disparities... This means diversifying the recruitment "
-        "for studies to include historically underrepresented and marginalized populations."
+        "Societal justice... requires a commitment to equitable practices. This means diversifying the recruitment for studies... "
+        "Achieving health equity demands robust community engagement."
     )
+    
+    st.markdown(f"""
+    <div class="header-box">
+        <h4>Tool Application: REP-EQUITY Toolkit</h4>
+        <p><b>Reference:</b> Retzer A, et al. Nat Med. 2023.</p>
+        <p>Use the 7 steps below to ensure the <b>{dataset_name}</b> is representative.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    instruction("Use the slider to increase 'Community Engagement' and observe how the diversity of your dataset changes.")
+    # --- REP-EQUITY SIMULATION ---
+    c1, c2 = st.columns([1, 1])
     
-    col1, col2 = st.columns([1, 2])
-    
-    with col1:
-        st.markdown("### Acquisition Strategy")
+    with c1:
+        st.markdown('<div class="toolkit-step"><b>Step 1: Define Underserved Groups</b></div>', unsafe_allow_html=True)
+        st.text_input(f"Which group is historically missing from {dataset_name}?", value=underserved_example)
+
+        st.markdown('<div class="toolkit-step"><b>Step 2: Set Equity Aims</b></div>', unsafe_allow_html=True)
+        st.checkbox("Equity is a primary aim of this study", value=True)
+
+        st.markdown('<div class="toolkit-step"><b>Steps 3 & 4: Recruitment Goals</b></div>', unsafe_allow_html=True)
+        goal = st.slider(f"Target % for Underserved {subject_term}s", 0, 100, 30)
+        baseline = 5 # Fixed baseline for demo
         
-        effort = st.slider(
-            "Community Outreach Effort (%)", 
-            min_value=0, 
-            max_value=100, 
-            value=10, 
-            step=10,
-            help="Higher effort includes: Hiring translators, holding town halls, and partnering with community leaders."
-        )
+    with c2:
+        st.markdown('<div class="toolkit-step"><b>Step 5: Manage External Factors (Strategies)</b></div>', unsafe_allow_html=True)
+        st.write("Select strategies to improve recruitment:")
+        s1 = st.checkbox("Community Liaisons (+10%)")
+        s2 = st.checkbox("Translated Materials (+5%)")
+        s3 = st.checkbox("Logistical Support (+10%)")
         
-        st.write(f"**Current Investment:** {effort}%")
+        # Calculate Logic
+        current = baseline + (10 if s1 else 0) + (5 if s2 else 0) + (10 if s3 else 0)
         
-        # Logic: Effort drives diversity
-        diversity_percent = 10 + (effort * 0.4) # Max 50%
+        st.markdown('<div class="toolkit-step"><b>Step 6: Evaluate Representation</b></div>', unsafe_allow_html=True)
         
-    with col2:
-        st.markdown("### Resulting Dataset Composition")
-        
-        # Data generation
         df = pd.DataFrame({
-            "Population Group": ["Historically Well-Represented", "Underserved / Marginalized"],
-            "Percentage": [100 - diversity_percent, diversity_percent]
+            "Stage": ["Baseline", "With Strategies", "Goal"],
+            "Percentage": [baseline, current, goal]
         })
-        
-        fig = px.pie(
-            df, values="Percentage", names="Population Group", 
-            color="Population Group",
-            color_discrete_map={"Historically Well-Represented": "#BDC3C7", "Underserved / Marginalized": "#27AE60"},
-            hole=0.4
-        )
+        fig = px.bar(df, x="Stage", y="Percentage", color="Stage", 
+                     color_discrete_map={"Baseline":"#95a5a6", "With Strategies":"#27ae60", "Goal":"#2c3e50"})
+        fig.update_layout(height=250, showlegend=False)
         st.plotly_chart(fig, use_container_width=True)
-        
-    # Feedback
-    if diversity_percent < 25:
-        st.info("ℹ️ **Status:** Your dataset is currently homogenous. Scientific findings may not be applicable to the general population.")
+
+    st.markdown("---")
+    st.markdown('**Step 7: Legacy**')
+    if current >= goal:
+        st.success(f"Result: By meeting these goals, the {dataset_name} will serve as a resource for reducing health disparities.")
     else:
-        st.success("✅ **Status:** Your dataset reflects the real world. Your scientific conclusions will be robust and equitable.")
+        st.warning("Result: Additional strategies are needed to prevent bias in future research.")
 
 # === SECTION 4: PRIVACY ===
-elif section == "4. Privacy: Security Demo":
-    st.markdown('<h2 class="universal-header">Pillar 3: Privacy & Security</h2>', unsafe_allow_html=True)
+elif section == "4. Privacy: Security Protocols":
+    st.header("Pillar 3: Privacy & Security")
     
     narrator(
-        "Protecting privacy is... a moral imperative. Employ multi-layered security protocols, including "
-        "state-of-the-art encryption... and stringent access controls."
+        "Protecting patient privacy is not merely a legal obligation — it's a moral imperative... "
+        "Employ multi-layered security protocols, including state-of-the-art encryption and routine security audits."
     )
     
-    instruction("Check the boxes to add security layers to your data protocol. Try to achieve 'Secure' status.")
-    
-    st.markdown("### Protocol Configuration")
-    
+    st.subheader(f"Security Audit for {dataset_name}")
+    st.write("Select the layers of defense you will implement:")
+
     c1, c2, c3, c4 = st.columns(4)
-    with c1:
-        layer1 = st.checkbox(
-            "End-to-End Encryption",
-            help="Ensures data is unreadable to anyone without the decryption key, even if intercepted."
-        )
-    with c2:
-        layer2 = st.checkbox(
-            "Role-Based Access Control",
-            help="Ensures only authorized personnel (e.g., PI, Data Manager) can access sensitive files."
-        )
-    with c3:
-        layer3 = st.checkbox(
-            "De-identification",
-            help="Removes direct identifiers (names, SSN) from the dataset used for analysis."
-        )
-    with c4:
-        layer4 = st.checkbox(
-            "Regular Security Audits",
-            help="Routine checks to find vulnerabilities before hackers do."
-        )
-        
-    security_score = sum([layer1, layer2, layer3, layer4])
+    l1 = c1.checkbox("End-to-End Encryption")
+    l2 = c2.checkbox("Role-Based Access Control")
+    l3 = c3.checkbox("De-identification")
+    l4 = c4.checkbox("Regular Audits")
     
-    st.write("---")
-    st.markdown("### Protocol Status")
+    score = sum([l1, l2, l3, l4])
     
-    if security_score == 4:
-        st.success("🛡️ **SECURE:** You have implemented a multi-layered defense. You are compliant with regulations like HIPAA.")
-    elif security_score >= 2:
-        st.warning("⚠️ **VULNERABLE:** You have some protection, but sophisticated threats could still expose sensitive genomic or medical data.")
-    else:
-        st.error("🚨 **AT RISK:** Data is largely unprotected. A breach here would damage patient trust and violate ethical standards.")
+    if st.button("Run Security Simulation"):
+        if score == 4:
+            st.success("🛡️ **Secure:** Your multi-layered protocols successfully protected the data.")
+        else:
+            st.error("🚨 **Vulnerable:** Missing protocols detected. The script emphasizes 'Multi-layered security protocols' are required.")
 
 # === SECTION 5: BENEFICENCE ===
-elif section == "5. Beneficence: Impact Demo":
-    st.markdown('<h2 class="universal-header">Pillar 4: Beneficence & Availability</h2>', unsafe_allow_html=True)
+elif section == "5. Beneficence: Closing the Loop":
+    st.header("Pillar 4: Beneficence & Availability")
     
     narrator(
-        "To maximize beneficence... researchers must cultivate an ethical framework that integrates continuous "
-        "feedback. Patients [and communities] should feel as though they are partners in the research process."
+        "To maximize beneficence... researchers must cultivate an ethical framework that integrates continuous patient feedback... "
+        "Outcomes from research should be made accessible to the contributing communities."
     )
-
-    instruction("Click the button below to 'Close the Loop' and see how data availability benefits the community.")
-
+    
     st.subheader("The Ethical Data Cycle")
     
     col1, col2, col3 = st.columns(3)
+    col1.info(f"1. Acquisition\n({subject_term} provides data)")
+    col2.info("2. Research\n(Analysis of patterns)")
     
-    with col1:
-        st.info("⬇️ **1. Acquisition**\n\nParticipants donate data/samples with trust.")
-    with col2:
-        st.info("⚙️ **2. Research**\n\nScientists analyze data to find patterns.")
-    with col3:
-        loop = st.button(
-            "🔄 Close the Loop (Share Results)",
-            help="Click to simulate returning the value of research back to the participants."
-        )
-        
-    st.write("---")
-    
-    if loop:
-        st.success("⬆️ **3. Return of Value (Beneficence Achieved)**")
-        st.markdown("""
-        **Impact:**
-        * **For Patients:** Access to improved treatments & personal health insights.
-        * **For Communities:** Public health reports & shared intellectual property.
-        * **For Science:** Trust is built, ensuring participation in future studies.
+    if col3.button("3. Return Value (Click to Close Loop)"):
+        col3.success("3. Beneficence\n(Findings returned to community)")
+        st.markdown(f"""
+        **Impact Statement:**
+        * {subject_term}s receive actionable health insights.
+        * Community trust is restored.
+        * The legacy of the {dataset_name} is positive.
         """)
     else:
-        st.markdown("""
-        **3. The Void (Current State)** *Data is extracted, but nothing is returned. Participants feel used rather than included.*
-        """)
+        col3.warning("3. [Waiting for Action]... \n(If ignored, the process is extractive, not beneficial.)")
 
-# === SECTION 6: SUMMARY ===
-elif section == "6. Summary":
-    st.title("🎓 Demo Summary")
-    
-    narrator(
-        "Ethically acquiring biomedical data is a nuanced process... By maintaining a steadfast commitment "
-        "to these principles, healthcare organizations can achieve a delicate balance where scientific "
-        "innovation does not compromise individual rights."
-    )
-    
-    st.markdown("""
-    ### Checklist for Ethical Acquisition
-    Whether you are pipetting in a lab or treating patients in a ward, these rules apply:
-    
-    * **Autonomy:** Did the person truly understand what they agreed to?
-    * **Justice:** Who is missing from my dataset?
-    * **Privacy:** Is this data treated with the same security I would want for my own family?
-    * **Beneficence:** How does this research give back to the people who made it possible?
-    """)
-    
-    st.success("Thank you for exploring this demo. Together, we can turn the challenges of today into opportunities for a healthier and more just tomorrow.")
+# --- FOOTER ---
+st.markdown("---")
+st.caption("Module MS2 | Course Materials | Based on REP-EQUITY Toolkit & IC3/ImmPort Datasets")
